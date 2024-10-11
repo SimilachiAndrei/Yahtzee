@@ -27,11 +27,31 @@ class Dice:
     def print_table(self):
         print(self.table_dices)
 
+class State:
+    def __init__(self):
+        round = 0
+        score = [0,0]
+        player = rand.randint(0,1)
+        throw_turn = 3
+        play = Dice()
+    def get_is_played(self):
+        return round == 13
 
-round = Dice()
 
-round.first_roll()
-round.print_table()
-round.table_to_hand(2)
-round.print_table()
-round.print_hand()
+class game:
+    def __init__(self):
+        state = State()
+    # def start_game(self):
+
+
+
+
+
+
+# round = Dice()
+#
+# round.first_roll()
+# round.print_table()
+# round.table_to_hand(2)
+# round.print_table()
+# round.print_hand()
