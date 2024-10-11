@@ -29,29 +29,45 @@ class Dice:
 
 class State:
     def __init__(self):
-        round = 0
-        score = [0,0]
-        player = rand.randint(0,1)
-        throw_turn = 3
-        play = Dice()
+        self.round = 0
+        self.score = [0,0]
+        self.player = rand.randint(0,1)
+        self.throw_turn = 3
+        self.play = Dice()
     def get_is_played(self):
-        return round == 13
+        return round != 13
+    def get_player(self):
+        return self.player
 
 
-class game:
+class Game:
     def __init__(self):
-        state = State()
-    # def start_game(self):
+        self.state = State()
+    def start_game(self):
+        while(self.state.get_is_played()):
+            if self.state.get_player() == 0:
+                command = input("What move would you like to do ?")
+                if(command == "roll" ):self.state.play.first_roll()
+                self.state.play.print_table()
+                self.state.play.print_hand()
+                self.state.player = (self.state.player + 1) % 2
+            else:
+                decision = rand.randint(0,1)
+                self.state.play.first_roll()
+                self.state.play.print_table()
+                self.state.play.print_hand()
+                if decision:
+                    self.state.play.table_to_hand(2)
+                    self.state.play.print_table()
+                    self.state.play.print_hand()
+                    self.state.play.roll()
+                    self.state.play.print_table()
+                    self.state.play.print_hand()
+                    self.state.play.hand_to_table(0)
+                    self.state.play.print_table()
+                    self.state.play.print_hand()
+                self.state.player = (self.state.player + 1) % 2
 
 
-
-
-
-
-# round = Dice()
-#
-# round.first_roll()
-# round.print_table()
-# round.table_to_hand(2)
-# round.print_table()
-# round.print_hand()
+game = Game()
+game.start_game()
