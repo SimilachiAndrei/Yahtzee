@@ -30,15 +30,47 @@ class Dice:
 class State:
     def __init__(self):
         self.round = 0
-        self.score = [0,0]
         self.player = rand.randint(0,1)
         self.throw_turn = 3
         self.play = Dice()
-    def get_is_played(self):
-        return round != 13
+        self.categories = {"aces": [0, 0], "twos": [0, 0], "threes": [0, 0], "fours": [0, 0], "fives": [0, 0], "sixes": [0, 0],
+                           "three of a kind": [0, 0], "four of a kind": [0, 0], "full house": [0, 0], "small straight": [0, 0],
+                           "large straight": [0, 0], "yahtzee": [0, 0], "chance": [0, 0]}
+    # def get_is_played(self):
+    #     return round != 13
     def get_player(self):
         return self.player
 
+    def is_final_state(self):
+        return self.round >=13
+
+    def choose_category(self, category, player_number):
+        score = self.calculate_score(category)
+        self.categories[category][player_number] = score
+
+    def print_player_score(self, player):
+        print(sum(val[player] for val in self.categories))
+
+    def calculate_score(self, category):
+        dice = self.play.hand_dices
+        if category == "aces":
+            return sum(die for die in dice if die == 1)
+        elif category == "twos":
+            return sum(die for die in dice if die == 2)
+        elif category == "3 of a kind":
+            if any(dice.count(die) >= 3 for die in dice):
+                return sum(dice)
+        ## TO DO: the rest of them
+            else:
+                return 0
+
+    def next_turn(self):
+        if self.throw_turn == 0:
+            self.round += 1
+            self.throw_turn = 3
+            self.player = (self.player + 1) % 2  # Switch player
+    def can_roll(self):
+        return self.throw_turn > 0
 
 class Game:
     def __init__(self):
