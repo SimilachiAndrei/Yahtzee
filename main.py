@@ -36,17 +36,37 @@ class State:
         self.categories = {"aces": [0, 0], "twos": [0, 0], "threes": [0, 0], "fours": [0, 0], "fives": [0, 0], "sixes": [0, 0],
                            "three of a kind": [0, 0], "four of a kind": [0, 0], "full house": [0, 0], "small straight": [0, 0],
                            "large straight": [0, 0], "yahtzee": [0, 0], "chance": [0, 0]}
-    # def get_is_played(self):
-    #     return round != 13
+
     def get_player(self):
         return self.player
-
+#validations
     def is_final_state(self):
         return self.round >=13
+    def can_roll(self):
+        return self.throw_turn > 0
+    def is_valid_category(self, category):
+        if self.categories[category][self.get_player()] == 0:
+            return True
+        return False
 
-    def choose_category(self, category, player_number):
+
+#transitions
+    def next_player(self):
+        if self.player == 1:
+            self.round += 1
+        self.throw_turn = 3
+        self.player = (self.player + 1) % 2
+    def next_turn(self):
+        if self.can_roll():
+            self.play.roll()
+            self.throw_turn -= 1
+    def first_roll(self):
+        self.play.first_roll()
+        self.throw_turn -= 1
+
+    def choose_category(self, category):
         score = self.calculate_score(category)
-        self.categories[category][player_number] = score
+        self.categories[category][self.get_player()] = score
 
     def print_player_score(self, player):
         print(sum(val[player] for val in self.categories))
@@ -63,14 +83,6 @@ class State:
         ## TO DO: the rest of them
             else:
                 return 0
-
-    def next_turn(self):
-        if self.throw_turn == 0:
-            self.round += 1
-            self.throw_turn = 3
-            self.player = (self.player + 1) % 2  # Switch player
-    def can_roll(self):
-        return self.throw_turn > 0
 
 class Game:
     def __init__(self):
