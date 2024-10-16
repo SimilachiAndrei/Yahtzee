@@ -207,14 +207,17 @@ class Game:
                     else:
                         decision2 = rand.randint(0, 1)
                         if decision2:
-                            if self.state.play.table_dices:
-                                pos = rand.randint(0, len(self.state.play.table_dices) - 1)
-                                print(f"AI moves table dice {self.state.play.table_dices[pos]} to hand.")
-                                self.state.play.table_to_hand(pos)
-                            elif self.state.play.hand_dices:
-                                pos = rand.randint(0, len(self.state.play.hand_dices) - 1)
-                                print(f"AI moves hand dice {self.state.play.hand_dices[pos]} to table.")
-                                self.state.play.hand_to_table(pos)
+                            decision3 = rand.randint(0, 1)
+                            if decision3:
+                                if self.state.play.table_dices:
+                                    pos = rand.randint(0, len(self.state.play.table_dices) - 1)
+                                    print(f"AI moves table dice {self.state.play.table_dices[pos]} to hand.")
+                                    self.state.play.table_to_hand(pos)
+                            else:
+                                if self.state.play.hand_dices:
+                                    pos = rand.randint(0, len(self.state.play.hand_dices) - 1)
+                                    print(f"AI moves hand dice {self.state.play.hand_dices[pos]} to table.")
+                                    self.state.play.hand_to_table(pos)
                         else:
                             if self.state.can_roll():
                                 print("AI decides to reroll.")
