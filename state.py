@@ -19,7 +19,7 @@ class State:
 
     def get_random_valid_key(self):
         available_categories = [category for category in self.categories if
-                                self.categories[category][self.get_player()] == 0]
+                                self.categories[category][self.get_player()] is not None]
         return rand.choice(available_categories) if available_categories else None
 
     # Validations

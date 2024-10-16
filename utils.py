@@ -13,11 +13,13 @@ def calculate_score(dices, category):
     elif category == "sixes":
         return sum(die for die in dice if die == 6)
     elif category == "three of a kind":
+        if len(dice) == 0: return 0
         if any(dice.count(die) >= 3 for die in dice):
             return sum(dice)
         else:
             return 0
     elif category == "four of a kind":
+        if len(dice) == 0: return 0
         if any(dice.count(die) >= 4 for die in dice):
             return sum(dice)
     elif category == "full house":
@@ -27,13 +29,13 @@ def calculate_score(dices, category):
         else:
             return 0
     elif category == "small straight":
-        if set([1, 2, 3, 4]).issubset(set(dice)) or set([2, 3, 4, 5]).issubset(set(dice)) or set([3, 4, 5, 6]).issubset(
+        if {1, 2, 3, 4}.issubset(set(dice)) or {2, 3, 4, 5}.issubset(set(dice)) or {3, 4, 5, 6}.issubset(
                 set(dice)):
             return 30
         else:
             return 0
     elif category == "large straight":
-        if set([1, 2, 3, 4, 5]) == set(dice) or set([2, 3, 4, 5, 6]) == set(dice):
+        if {1, 2, 3, 4, 5} == set(dice) or {2, 3, 4, 5, 6} == set(dice):
             return 40
         else:
             return 0
