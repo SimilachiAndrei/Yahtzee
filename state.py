@@ -30,6 +30,7 @@ class State:
         return self.throw_turn > 0
 
     def is_valid_category(self, category):
+        if category not in self.categories: return -1
         return self.categories[category][self.get_player()] == 0
 
     # Transitions
@@ -51,7 +52,8 @@ class State:
     def choose_category(self, category):
         score = util.calculate_score(self.play, category)
         print(f"Category: {category}, Score calculated: {score}")
-        self.categories[category][self.get_player()] = score
+        self.categories[category][self.get_player()] = score if score > 0 else None
 
     def print_player_score(self, player):
-        print(f"Player {player} score: {sum(val[player] for val in self.categories.values())}")
+        total_score = sum(val[player] for val in self.categories.values() if val[player] is not None)
+        print(f"Player {player} score: {total_score}")

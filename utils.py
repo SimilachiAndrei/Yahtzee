@@ -1,5 +1,5 @@
-def calculate_score(dice, category):
-    dice = dice.hand_dices
+def calculate_score(dices, category):
+    dice = dices.hand_dices
     if category == "aces":
         return sum(die for die in dice if die == 1)
     elif category == "twos":
@@ -38,7 +38,7 @@ def calculate_score(dice, category):
         else:
             return 0
     elif category == "yahtzee":
-        if dice.count(dice[0]) == 5:
+        if len(dice) != 0 and dice.count(dice[0]) == 5:
             return 50
         else:
             return 0
