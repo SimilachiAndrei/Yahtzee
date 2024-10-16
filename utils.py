@@ -1,5 +1,5 @@
 def calculate_score(dice, category):
-    dice = dice.table_dices
+    dice = dice.hand_dices
     if category == "aces":
         return sum(die for die in dice if die == 1)
     elif category == "twos":

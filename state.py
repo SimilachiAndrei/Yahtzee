@@ -49,7 +49,8 @@ class State:
         self.throw_turn -= 1
 
     def choose_category(self, category):
-        score = util.calculate_score(self.play,util)
+        score = util.calculate_score(self.play, category)
+        print(f"Category: {category}, Score calculated: {score}")
         self.categories[category][self.get_player()] = score
 
     def print_player_score(self, player):

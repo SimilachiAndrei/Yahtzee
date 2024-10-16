@@ -15,7 +15,7 @@ class Game:
     def player_turn(self):
         """Handle player moves."""
         self.state.first_roll()
-        while self.state.can_roll():
+        while True:
             self.state.play.print_hand()
             self.state.play.print_table()
 
@@ -43,6 +43,7 @@ class Game:
                     self.state.next_turn()
                     self.state.play.print_hand()
                     self.state.play.print_table()
+                    print(f"Remaining rolls: {self.state.throw_turn}")
                 else:
                     print("No rolls left.")
 
@@ -79,6 +80,7 @@ class Game:
 
             elif decision == 1 and self.state.can_roll():
                 print("AI decides to reroll.")
+                self.state.play.roll()
                 self.state.next_turn()
 
         select = self.state.get_random_valid_key()
