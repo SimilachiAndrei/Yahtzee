@@ -30,7 +30,7 @@ class State:
         return self.throw_turn > 0
 
     def is_valid_category(self, category):
-        if category not in self.categories: return -1
+        if category not in self.categories: return False
         return self.categories[category][self.get_player()] == 0
 
     # Transitions
