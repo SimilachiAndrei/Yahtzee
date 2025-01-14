@@ -25,10 +25,10 @@ CATEGORY_SCORES = {
 
 
 class YahtzeeGame:
-    def __init__(self):
-        self.score_sheet = {category: None for category in CATEGORIES}
-        self.dice = [random.randint(1, NUM_SIDES) for _ in range(NUM_DICE)]
-        self.rerolls_left = 2
+    def __init__(self, dice=None, score_sheet=None, rerolls_left=2):
+        self.dice = dice if dice else [random.randint(1, NUM_SIDES) for _ in range(NUM_DICE)]
+        self.score_sheet = score_sheet if score_sheet else {category: None for category in CATEGORIES}
+        self.rerolls_left = rerolls_left
 
     def roll_dice(self, keep):
         if self.rerolls_left > 0:
@@ -155,45 +155,38 @@ def train_agent(episodes=1000):
     return agent, rewards_per_episode
 
 
-
-def play_game(agent):
-    game = YahtzeeGame()
-    total_score = 0
-    print(f"Dice: {game.dice}, Rerolls left: {game.rerolls_left}, Score Sheet: {game.score_sheet}")
-    while not game.is_game_over():
-        state = game.get_state()
-        action_data = agent.choose_action(state, game)
-
-        if isinstance(action_data, tuple) and action_data[0] == "Reroll":
-            _, reroll_pattern = action_data
-            game.roll_dice(reroll_pattern)
-            print(f"Rerolling Dice: {game.dice}, Rerolls left: {game.rerolls_left}")
-        elif action_data is not None:
-            total_score += game.score_roll(action_data)
-            print(f"Scored {action_data}: {game.score_sheet[action_data]}")
-        else:
-            break
-
-        print(f"Dice: {game.dice}, Rerolls left: {game.rerolls_left}, Score Sheet: {game.score_sheet}")
-
-    return total_score
-
-def display_policy(agent):
-    policy = {}
-    for (state, action), value in agent.q_table.items():
-        if state not in policy or value > agent.q_table.get((state, policy[state]), 0):
-            policy[state] = action
-    print("Politica determinată de algoritm:")
-    for state, action in policy.items():
-        print(f"Stare: {state}, Acțiune optimă: {action}")
-
-if __name__ == "__main__":
+def show_best_move(dice, score_sheet, rerolls_left):
+    # Train the agent first
     print("Training the agent...")
-    trained_agent, rewards = train_agent(episodes=10)
+    trained_agent, _ = train_agent(episodes=10)
 
-    print("Playing a game with the trained policy...")
-    final_score = play_game(trained_agent)
-    print(f"Final score: {final_score}")
+    game = YahtzeeGame(dice=dice, score_sheet=score_sheet, rerolls_left=rerolls_left)
+    state = game.get_state()
+    action_data = trained_agent.choose_action(state, game)
 
-    display_policy(trained_agent)
 
+
+    if isinstance(action_data, tuple) and action_data[0] == "Reroll":
+        _, reroll_pattern = action_data
+        print(f"Recommended move: Reroll dice {reroll_pattern} (Current dice: {game.dice}, Rerolls left: {game.rerolls_left})")
+        return action_data
+    elif action_data is not None:
+        print(f"Recommended move: Score in category '{action_data}'")
+        return action_data
+    else:
+        print("No valid move available")
+        return action_data
+
+
+
+# Example usage
+if __name__ == "__main__":
+    dice = [1, 3, 3, 5, 6]
+    score_sheet = {
+        "Aces": None, "Twos": None, "Threes": None, "Fours": None, "Fives": None, "Sixes": None,
+        "Three of a Kind": None, "Four of a Kind": None, "Full House": None, "Small Straight": None,
+        "Large Straight": None, "Yahtzee": None, "Chance": None
+    }
+    rerolls_left = 2
+
+    show_best_move(dice, score_sheet, rerolls_left)
