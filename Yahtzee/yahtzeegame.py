@@ -62,7 +62,6 @@ class YahtzeeGame:
                 convert_to_score_sheet(self.state.categories),
                 self.state.throw_turn
             )
-
         self.state.next_player()
 
     def choose_category(self, category):

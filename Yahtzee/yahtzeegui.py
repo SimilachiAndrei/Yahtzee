@@ -161,12 +161,17 @@ class YahtzeeGUI:
     def ai_turn(self):
         """Automate AI moves."""
         self.status_label.config(text="AI Status: Playing...")
+        print("start of ai turn 1")
         self.game.ai_turn()
+        print("end of ai turn 1")
         self.update_dice_display()
         self.update_score_display()
         self.update_category_score_table()  # Update category score table
         self.status_label.config(text="AI Status: Waiting")
+        self.game.state.next_player()
+        print("start of ai turn 2")
         self.start_round()
+        print("end of ai turn 2")
 
     def move_dice_hand_to_table(self, index):
         """Move dice from hand to table when hand dice is clicked."""
