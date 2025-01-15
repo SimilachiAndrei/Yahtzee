@@ -50,7 +50,7 @@ class YahtzeeGame:
     def is_game_over(self):
         return all(value is not None for value in self.score_sheet.values())
 
-    def simulate_reroll(self, num_simulations=1000):
+    def simulate_reroll(self, num_simulations=100):
         if self.rerolls_left <= 0:
             return 0, [False] * NUM_DICE
 
@@ -102,12 +102,15 @@ class QNetwork(nn.Module):
 
 class DQNAgent:
     def __init__(self, state_size, action_size, hidden_size=128, alpha=0.001, gamma=0.9, epsilon=1.0,
-                 epsilon_decay=0.995):
+                 epsilon_min=0.01, epsilon_decay_steps=10000000):
         self.state_size = state_size
         self.action_size = action_size
         self.gamma = gamma
         self.epsilon = epsilon
-        self.epsilon_decay = epsilon_decay
+        self.epsilon_min = epsilon_min
+        self.epsilon_decay_steps = epsilon_decay_steps
+        self.epsilon_decay_rate = (epsilon - epsilon_min) / epsilon_decay_steps
+        self.step_counter = 0
 
         self.q_network = QNetwork(state_size, hidden_size, action_size)
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=alpha)
@@ -156,6 +159,8 @@ class DQNAgent:
 
         current_q_values = self.q_network(state_tensor)
 
+        target_q_values = current_q_values.clone()
+
         with torch.no_grad():
             next_q_values = self.q_network(next_state_tensor)
             max_next_q = torch.max(next_q_values)
@@ -165,16 +170,19 @@ class DQNAgent:
         else:
             action_index = CATEGORIES.index(action)
 
-        target = reward + self.gamma * max_next_q
-        current_q_values[action_index] = target
+        target_q_values[action_index] = reward + self.gamma * max_next_q
 
         self.optimizer.zero_grad()
-        loss = self.criterion(self.q_network(state_tensor), current_q_values)
+        loss = self.criterion(current_q_values, target_q_values)
         loss.backward()
         self.optimizer.step()
 
     def decay_epsilon(self):
-        self.epsilon = max(0.01, self.epsilon * self.epsilon_decay)
+        self.step_counter += 1
+        self.epsilon = max(
+            self.epsilon_min,
+            self.epsilon - self.epsilon_decay_rate
+        )
 
     def save_model(self, filename):
         torch.save(self.q_network.state_dict(), filename)
@@ -214,7 +222,7 @@ def train_agent(episodes=1000):
         if (episode + 1) % 100 == 0:
             print(f"Episode {episode + 1}/{episodes}, Total Reward: {total_reward}")
 
-    agent.save_model("dqn_model" + str(episodes) + ".pth")
+    agent.save_model("rl_models/dqn_model" + str(episodes) + ".pth")
     return agent
 
 
@@ -261,18 +269,18 @@ def test_agent(agent, num_games=100, verbose=False):
 
 
 if __name__ == "__main__":
-    state_size = NUM_DICE + len(CATEGORIES) + 1
-    action_size = len(CATEGORIES) + 1
-    trained_agent = DQNAgent(state_size, action_size)
+    # state_size = NUM_DICE + len(CATEGORIES) + 1
+    # action_size = len(CATEGORIES) + 1
+    # trained_agent = DQNAgent(state_size, action_size)
+    #
+    # try:
+    #     trained_agent.load_model("rl_models/dqn_model.pth")
+    #     print("Model loaded successfully!")
+    # except FileNotFoundError:
+    #     print("No pre-trained model found. Please train the agent first.")
+    #     exit()
 
-    try:
-        trained_agent.load_model("rl_models/dqn_model.pth")
-        print("Model loaded successfully!")
-    except FileNotFoundError:
-        print("No pre-trained model found. Please train the agent first.")
-        exit()
-
-    # trained_agent = train_agent(1)
+    trained_agent = train_agent(10000)
 
     test_agent(trained_agent, num_games=100, verbose=False)
 
