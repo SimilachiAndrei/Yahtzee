@@ -182,9 +182,19 @@ class ExpectimaxYahtzee:
             'keep_mask': [False] * NUM_DICE
         }
 
+        current_best_score = float('-inf')
+        best_category = None
+        for category in CATEGORIES:
+            if game.score_sheet[category] is None:
+                score = CATEGORY_SCORES[category](game.dice)
+                if score > current_best_score:
+                    current_best_score = score
+                    best_category = category
+
         if game.rerolls_left > 0:
-            best_value = float('-inf')
+            best_value = current_best_score
             best_keep_mask = None
+            should_reroll = False
             keep_patterns = self.generate_strategic_keep_patterns(game.dice)
 
             for keep_mask in keep_patterns:
@@ -194,16 +204,13 @@ class ExpectimaxYahtzee:
                 if value > best_value:
                     best_value = value
                     best_keep_mask = keep_mask
-            return ('reroll', best_keep_mask)
+                    should_reroll = True
+
+            if should_reroll:
+                return ('reroll', best_keep_mask)
+            else:
+                return ('score', best_category)
         else:
-            best_value = float('-inf')
-            best_category = None
-            for category in CATEGORIES:
-                if game.score_sheet[category] is None:
-                    score = CATEGORY_SCORES[category](game.dice)
-                    if score > best_value:
-                        best_value = score
-                        best_category = category
             return ('score', best_category)
 
 
