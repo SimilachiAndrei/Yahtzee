@@ -1,5 +1,7 @@
 import tkinter as tk
 import yahtzeegame as yz
+import chatbot
+from Yahtzee.chatbot import chatbot_response
 
 
 class YahtzeeGUI:
@@ -70,11 +72,28 @@ class YahtzeeGUI:
         self.category_table = []
         self.create_category_score_table()
 
+        # Add text box and response label
+        self.text_frame = tk.Frame(master)
+        self.text_frame.pack(pady=20)
+
+        self.text_entry = tk.Entry(self.text_frame, font=('Arial', 14), width=30)
+        self.text_entry.grid(row=0, column=0, padx=5)
+
+        self.text_submit_button = tk.Button(self.text_frame, text="Submit", command=self.submit_text)
+        self.text_submit_button.grid(row=0, column=1, padx=5)
+
+        self.response_label = tk.Label(self.text_frame, text='', font=('Arial', 14))
+        self.response_label.grid(row=1, column=0, columnspan=2, pady=10)
+
         # Start the first round
         self.start_round()
-        print()
-        print("start round thing")
-        print()
+
+    def submit_text(self):
+        """Handle text submission from the user."""
+        user_input = self.text_entry.get()
+
+        response = chatbot_response(user_input)
+        self.response_label.config(text=response)
 
     def create_category_score_table(self):
         """Create the category score table with 3 columns: Category, Player Score, AI Score."""
