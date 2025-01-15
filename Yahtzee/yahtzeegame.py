@@ -44,13 +44,22 @@ class YahtzeeGame:
 
         while self.state.throw_turn < 3:
             if chosen_ai == 0:
+                print("using expectimax")
                 action_data = expectimax.show_best_move(
                     self.state.play.table_dices,
                     convert_to_score_sheet(self.state.categories),
                     self.state.throw_turn
                 )
-            else:
+            elif chosen_ai == 1:
+                print("using RL")
                 action_data = RL_AI.show_best_move(
+                    self.state.play.table_dices,
+                    convert_to_score_sheet(self.state.categories),
+                    self.state.throw_turn
+                )
+            else:
+                print("using dqn")
+                action_data = dqn.show_best_move(
                     self.state.play.table_dices,
                     convert_to_score_sheet(self.state.categories),
                     self.state.throw_turn

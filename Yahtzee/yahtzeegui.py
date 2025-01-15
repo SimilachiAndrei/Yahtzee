@@ -1,8 +1,6 @@
 import tkinter as tk
 import yahtzeegame as yz
-import chatbot
 from chatbot import chatbot_response
-
 
 class YahtzeeGUI:
     def __init__(self, master):
@@ -10,18 +8,27 @@ class YahtzeeGUI:
         self.master = master
         master.title("Yahtzee Game")
 
-        # Title
-        self.title_frame = tk.Frame(master)
-        self.title_frame.pack()
+        # Main horizontal split frame
+        self.main_pane = tk.PanedWindow(master, orient=tk.HORIZONTAL)
+        self.main_pane.pack(fill=tk.BOTH, expand=True)
 
+        # Left frame for game content
+        self.left_frame = tk.Frame(self.main_pane)
+        self.main_pane.add(self.left_frame)
+
+        # Right frame for chat content
+        self.right_frame = tk.Frame(self.main_pane, padx=20, pady=10)
+        self.main_pane.add(self.right_frame)
+
+        # Title
+        self.title_frame = tk.Frame(self.left_frame)
+        self.title_frame.pack()
         self.title_label = tk.Label(self.title_frame, text='Yahtzee!', font=('Arial', 16))
         self.title_label.pack()
 
         # Player's dice hands and table frame
-        self.dice_frame = tk.Frame(master)
+        self.dice_frame = tk.Frame(self.left_frame)
         self.dice_frame.pack()
-
-        # Hand and table dice labels
         self.hand_labels = []
         self.table_labels = []
 
@@ -38,52 +45,44 @@ class YahtzeeGUI:
             table_label = tk.Label(self.dice_frame, text='0', font=('Arial', 20), width=5, borderwidth=2,
                                    relief="groove")
             table_label.grid(row=1, column=i)
-            table_label.bind("<Button-1>", lambda event, idx=i: self.move_dice_table_to_hand(idx))  # bind click event
+            table_label.bind("<Button-1>", lambda event, idx=i: self.move_dice_table_to_hand(idx))
             self.table_labels.append(table_label)
 
         # Roll and Select Category buttons
-        self.roll_button = tk.Button(master, text="Roll", command=self.roll_dice, state=tk.DISABLED)
+        self.roll_button = tk.Button(self.left_frame, text="Roll", command=self.roll_dice, state=tk.DISABLED)
         self.roll_button.pack()
 
         # Category selection
-        self.category_frame = tk.Frame(master)
+        self.category_frame = tk.Frame(self.left_frame)
         self.category_frame.pack()
         self.category_buttons = []
         self.create_category_table()
 
         # AI status label
-        self.status_label = tk.Label(master, text="AI Status: Waiting", font=('Arial', 16))
+        self.status_label = tk.Label(self.left_frame, text="AI Status: Waiting", font=('Arial', 16))
         self.status_label.pack()
 
         # Score display
-        self.score_frame = tk.Frame(master)
+        self.score_frame = tk.Frame(self.left_frame)
         self.score_frame.pack()
-
         self.player_score_label = tk.Label(self.score_frame, text='Player Score: 0', font=('Arial', 16))
         self.player_score_label.grid(row=0, column=0)
-
         self.ai_score_label = tk.Label(self.score_frame, text='AI Score: 0', font=('Arial', 16))
         self.ai_score_label.grid(row=0, column=1)
 
         # Category score table
-        self.category_table_frame = tk.Frame(master)
+        self.category_table_frame = tk.Frame(self.left_frame)
         self.category_table_frame.pack(pady=10)
-
         self.category_table = []
         self.create_category_score_table()
 
-        # Add text box and response label
-        self.text_frame = tk.Frame(master)
-        self.text_frame.pack(pady=20)
-
-        self.text_entry = tk.Entry(self.text_frame, font=('Arial', 14), width=30)
-        self.text_entry.grid(row=0, column=0, padx=5)
-
-        self.text_submit_button = tk.Button(self.text_frame, text="Submit", command=self.submit_text)
-        self.text_submit_button.grid(row=0, column=1, padx=5)
-
-        self.response_label = tk.Label(self.text_frame, text='', font=('Arial', 14))
-        self.response_label.grid(row=1, column=0, columnspan=2, pady=10)
+        # Chat box on the right
+        self.text_entry = tk.Entry(self.right_frame, font=('Arial', 14), width=30)
+        self.text_entry.pack(pady=5)
+        self.text_submit_button = tk.Button(self.right_frame, text="Submit", command=self.submit_text)
+        self.text_submit_button.pack(pady=5)
+        self.response_label = tk.Label(self.right_frame, text='', font=('Arial', 14), justify=tk.LEFT, wraplength=300)
+        self.response_label.pack(pady=10, fill=tk.BOTH, expand=True)
 
         # Start the first round
         self.start_round()
@@ -91,37 +90,26 @@ class YahtzeeGUI:
     def submit_text(self):
         """Handle text submission from the user."""
         user_input = self.text_entry.get()
-
-        # response = chatbot_response(user_input)
-        response = "d"
+        response = chatbot_response(user_input)
         self.response_label.config(text=response)
 
     def create_category_score_table(self):
         """Create the category score table with 3 columns: Category, Player Score, AI Score."""
         categories = self.game.state.categories.keys()
-
-        # Header Row
-        tk.Label(self.category_table_frame, text="Category", font=("Arial", 12), width=20, anchor="w").grid(row=0,
-                                                                                                            column=0)
-        tk.Label(self.category_table_frame, text="Player Score", font=("Arial", 12), width=15, anchor="w").grid(row=0,
-                                                                                                                column=1)
-        tk.Label(self.category_table_frame, text="AI Score", font=("Arial", 12), width=15, anchor="w").grid(row=0,
-                                                                                                            column=2)
-
-        # Rows for categories and their scores
+        tk.Label(self.category_table_frame, text="Category", font=("Arial", 12), width=20, anchor="w").grid(row=0, column=0)
+        tk.Label(self.category_table_frame, text="Player Score", font=("Arial", 12), width=15, anchor="w").grid(row=0, column=1)
+        tk.Label(self.category_table_frame, text="AI Score", font=("Arial", 12), width=15, anchor="w").grid(row=0, column=2)
         row = 1
         for category in categories:
             category_name_label = tk.Label(self.category_table_frame, text=category.capitalize(), width=20, anchor="w")
             category_name_label.grid(row=row, column=0)
-
             player_score_label = tk.Label(self.category_table_frame, text="0", width=15, anchor="w")
             player_score_label.grid(row=row, column=1)
-
             ai_score_label = tk.Label(self.category_table_frame, text="0", width=15, anchor="w")
             ai_score_label.grid(row=row, column=2)
-
             self.category_table.append((category_name_label, player_score_label, ai_score_label))
             row += 1
+
 
     def update_category_score_table(self):
         """Update the category score table for both the player and AI."""
