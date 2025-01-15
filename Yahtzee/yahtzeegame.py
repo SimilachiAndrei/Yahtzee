@@ -32,15 +32,19 @@ class YahtzeeGame:
         return False
 
     def ai_turn(self):
+        self.with_rl_ai()
+
+
+    def with_rl_ai(self):
         self.state.first_roll()
 
-        action_data = RL_AI.show_best_move(
-            self.state.play.table_dices,
-            convert_to_score_sheet(self.state.categories),
-            self.state.throw_turn
-        )
-
         while self.state.throw_turn < 3:
+            action_data = RL_AI.show_best_move(
+                self.state.play.table_dices,
+                convert_to_score_sheet(self.state.categories),
+                self.state.throw_turn
+            )
+
             if isinstance(action_data, tuple) and action_data[0] == "Reroll":
                 _, reroll_pattern = action_data
                 self.state.play.hand_to_table_list(reroll_pattern)
@@ -57,12 +61,7 @@ class YahtzeeGame:
                 print("No valid action. Skipping turn.")
                 break
             print("self categories: " + str(self.state.categories))
-            action_data = RL_AI.show_best_move(
-                self.state.play.table_dices,
-                convert_to_score_sheet(self.state.categories),
-                self.state.throw_turn
-            )
-            print(convert_to_score_sheet(self.state.categories))
+            print("converted categories: " + str(convert_to_score_sheet(self.state.categories)))
 
     def choose_category(self, category):
         """Player or AI selects a category after their turn."""

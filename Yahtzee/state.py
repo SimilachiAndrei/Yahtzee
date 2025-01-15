@@ -5,13 +5,13 @@ import utils as util
 class State:
     def __init__(self):
         self.round = 0
-        self.player = rand.randint(0, 1)
+        self.player = 0
         self.throw_turn = 3
         self.play = dc.Dice()
         self.categories = {
-            "aces": [0, 0], "twos": [0, 0], "threes": [0, 0], "fours": [0, 0], "fives": [0, 0],
-            "sixes": [0, 0], "three of a kind": [0, 0], "four of a kind": [0, 0], "full house": [0, 0],
-            "small straight": [0, 0], "large straight": [0, 0], "yahtzee": [0, 0], "chance": [0, 0]
+            "aces": [None, None], "twos": [None, None], "threes": [None, None], "fours": [None, None], "fives": [None, None],
+            "sixes": [None, None], "three of a kind": [None, None], "four of a kind": [None, None], "full house": [None, None],
+            "small straight": [None, None], "large straight": [None, None], "yahtzee": [None, None], "chance": [None, None]
         }
 
     def get_player(self):
@@ -31,7 +31,7 @@ class State:
 
     def is_valid_category(self, category):
         if category not in self.categories: return False
-        return self.categories[category][self.get_player()] == 0
+        return self.categories[category][self.get_player()] is None
 
     # Transitions
     def next_player(self):
@@ -52,7 +52,7 @@ class State:
     def choose_category(self, category):
         score = util.calculate_score(self.play, category)
         print(f"Category: {category}, Score calculated: {score}")
-        self.categories[category][self.get_player()] = score if score > 0 else None
+        self.categories[category][self.get_player()] = score
 
     def print_player_score(self, player):
         total_score = sum(val[player] for val in self.categories.values() if val[player] is not None)

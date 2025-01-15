@@ -46,8 +46,7 @@ def calculate_score(dices, category):
             return 0
     elif category == "chance":
         return sum(dice)
-    else:
-        return 0
+    return 0
 
 def convert_to_score_sheet(categories):
     score_sheet = {
@@ -57,8 +56,6 @@ def convert_to_score_sheet(categories):
     }
 
     for category in score_sheet:
-        # Convert category to lowercase and check if it exists in the categories dictionary
         category_lower = category.lower()
-        if categories[category_lower][1] != 0:  # Assume [0] is the player's score
-            score_sheet[category] = categories[category_lower][1]
+        score_sheet[category] = categories[category_lower][1]
     return score_sheet
