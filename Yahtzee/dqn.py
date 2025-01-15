@@ -267,6 +267,25 @@ def test_agent(agent, num_games=100, verbose=False):
     print(f"Max score: {max(scores)}")
     print(f"Min score: {min(scores)}")
 
+def show_best_move(dice, score_sheet, rerolls_left):
+    # Train the agent first
+    print("Training the agent...")
+    trained_agent = train_agent(episodes=10)
+
+    game = YahtzeeGame(dice=dice, score_sheet=score_sheet, rerolls_left=rerolls_left)
+    state = game.get_state()
+    action_data = trained_agent.choose_action(state, game)
+
+    if isinstance(action_data, tuple) and action_data[0] == "Reroll":
+        _, reroll_pattern = action_data
+        print(f"Recommended move: Reroll dice {reroll_pattern} (Current dice: {game.dice}, Rerolls left: {game.rerolls_left})")
+        return action_data
+    elif action_data is not None:
+        print(f"Recommended move: Score in category '{action_data}'")
+        return action_data
+    else:
+        print("No valid move available")
+        return action_data
 
 if __name__ == "__main__":
     # state_size = NUM_DICE + len(CATEGORIES) + 1
@@ -286,26 +305,3 @@ if __name__ == "__main__":
 
     print("\nPlaying a single game with detailed output:")
     test_agent(trained_agent, num_games=1, verbose=True)
-
-
-def show_best_move(dice, score_sheet, rerolls_left):
-    # Train the agent first
-    print("Training the agent...")
-    trained_agent = train_agent(episodes=10)
-
-    game = YahtzeeGame(dice=dice, score_sheet=score_sheet, rerolls_left=rerolls_left)
-    state = game.get_state()
-    action_data = trained_agent.choose_action(state, game)
-
-
-
-    if isinstance(action_data, tuple) and action_data[0] == "Reroll":
-        _, reroll_pattern = action_data
-        print(f"Recommended move: Reroll dice {reroll_pattern} (Current dice: {game.dice}, Rerolls left: {game.rerolls_left})")
-        return action_data
-    elif action_data is not None:
-        print(f"Recommended move: Score in category '{action_data}'")
-        return action_data
-    else:
-        print("No valid move available")
-        return action_data

@@ -39,12 +39,21 @@ class YahtzeeGame:
     def with_rl_ai(self):
         self.state.first_roll()
 
+        chosen_ai = rand.randint(0,2)
+
         while self.state.throw_turn < 3:
-            action_data = dqn.show_best_move(
-                self.state.play.table_dices,
-                convert_to_score_sheet(self.state.categories),
-                self.state.throw_turn
-            )
+            if chosen_ai == 0:
+                action_data = dqn.show_best_move(
+                    self.state.play.table_dices,
+                    convert_to_score_sheet(self.state.categories),
+                    self.state.throw_turn
+                )
+            else:
+                action_data = RL_AI.show_best_move(
+                    self.state.play.table_dices,
+                    convert_to_score_sheet(self.state.categories),
+                    self.state.throw_turn
+                )
 
             if isinstance(action_data, tuple) and action_data[0] == "Reroll":
                 _, reroll_pattern = action_data
