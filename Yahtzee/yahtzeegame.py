@@ -47,7 +47,6 @@ class YahtzeeGame:
                 self.state.play.roll()
                 self.state.next_turn()
                 self.state.play.transfer_to_table()
-
                 print("Rerolling dice...")
             elif action_data is not None:
                 print("Choosing category...")
@@ -57,12 +56,13 @@ class YahtzeeGame:
             else:
                 print("No valid action. Skipping turn.")
                 break
+            print("self categories: " + str(self.state.categories))
             action_data = RL_AI.show_best_move(
                 self.state.play.table_dices,
                 convert_to_score_sheet(self.state.categories),
                 self.state.throw_turn
             )
-        self.state.next_player()
+            print(convert_to_score_sheet(self.state.categories))
 
     def choose_category(self, category):
         """Player or AI selects a category after their turn."""

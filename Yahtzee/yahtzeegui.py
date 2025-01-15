@@ -72,6 +72,9 @@ class YahtzeeGUI:
 
         # Start the first round
         self.start_round()
+        print()
+        print("start round thing")
+        print()
 
     def create_category_score_table(self):
         """Create the category score table with 3 columns: Category, Player Score, AI Score."""
@@ -133,6 +136,7 @@ class YahtzeeGUI:
             self.ai_turn()
 
     def player_turn(self):
+        print("player turn")
         """Handle the player's turn (first roll is automatic)."""
         self.game.player_first_roll()
         self.update_dice_display()
@@ -161,17 +165,12 @@ class YahtzeeGUI:
     def ai_turn(self):
         """Automate AI moves."""
         self.status_label.config(text="AI Status: Playing...")
-        print("start of ai turn 1")
         self.game.ai_turn()
-        print("end of ai turn 1")
         self.update_dice_display()
         self.update_score_display()
         self.update_category_score_table()  # Update category score table
         self.status_label.config(text="AI Status: Waiting")
-        self.game.state.next_player()
-        print("start of ai turn 2")
         self.start_round()
-        print("end of ai turn 2")
 
     def move_dice_hand_to_table(self, index):
         """Move dice from hand to table when hand dice is clicked."""

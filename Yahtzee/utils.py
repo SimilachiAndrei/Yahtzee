@@ -56,18 +56,9 @@ def convert_to_score_sheet(categories):
         "Small Straight": None, "Large Straight": None, "Yahtzee": None, "Chance": None
     }
 
-    # Mapping of the categories from input to the score_sheet keys
-    category_mapping = {
-        "aces": "Aces", "twos": "Twos", "threes": "Threes", "fours": "Fours", "fives": "Fives",
-        "sixes": "Sixes", "three of a kind": "Three of a Kind", "four of a kind": "Four of a Kind",
-        "full house": "Full House", "small straight": "Small Straight", "large straight": "Large Straight",
-        "yahtzee": "Yahtzee", "chance": "Chance"
-    }
-
-    # Populate the score_sheet with None (default value)
-    for category, value in categories.items():
-        score_sheet_name = category_mapping.get(category)
-        if score_sheet_name:
-            score_sheet[score_sheet_name] = None  # Initialize each category in score_sheet as None
-
+    for category in score_sheet:
+        # Convert category to lowercase and check if it exists in the categories dictionary
+        category_lower = category.lower()
+        if categories[category_lower][1] != 0:  # Assume [0] is the player's score
+            score_sheet[category] = categories[category_lower][1]
     return score_sheet
