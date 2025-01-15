@@ -92,7 +92,8 @@ class YahtzeeGUI:
         """Handle text submission from the user."""
         user_input = self.text_entry.get()
 
-        response = chatbot_response(user_input)
+        # response = chatbot_response(user_input)
+        response = "d"
         self.response_label.config(text=response)
 
     def create_category_score_table(self):
