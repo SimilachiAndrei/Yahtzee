@@ -28,10 +28,10 @@ CATEGORY_SCORES = {
 
 
 class YahtzeeGame:
-    def __init__(self):
-        self.score_sheet = {category: None for category in CATEGORIES}
-        self.dice = [random.randint(1, NUM_SIDES) for _ in range(NUM_DICE)]
-        self.rerolls_left = 2
+    def __init__(self, dice=None, score_sheet=None, rerolls_left=2):
+        self.dice = dice if dice else [random.randint(1, NUM_SIDES) for _ in range(NUM_DICE)]
+        self.score_sheet = score_sheet if score_sheet else {category: None for category in CATEGORIES}
+        self.rerolls_left = rerolls_left
 
     def roll_dice(self, keep):
         if self.rerolls_left > 0:
@@ -291,7 +291,7 @@ if __name__ == "__main__":
 def show_best_move(dice, score_sheet, rerolls_left):
     # Train the agent first
     print("Training the agent...")
-    trained_agent, _ = train_agent(episodes=10)
+    trained_agent = train_agent(episodes=10)
 
     game = YahtzeeGame(dice=dice, score_sheet=score_sheet, rerolls_left=rerolls_left)
     state = game.get_state()
