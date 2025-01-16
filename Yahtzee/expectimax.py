@@ -24,10 +24,10 @@ CATEGORY_SCORES = {
 }
 
 class YahtzeeGame:
-    def __init__(self):
-        self.score_sheet = {category: None for category in CATEGORIES}
-        self.dice = [random.randint(1, NUM_SIDES) for _ in range(NUM_DICE)]
-        self.rerolls_left = 2
+    def __init__(self, dice=None, score_sheet=None, rerolls_left=2):
+        self.dice = dice if dice else [random.randint(1, NUM_SIDES) for _ in range(NUM_DICE)]
+        self.score_sheet = score_sheet if score_sheet else {category: None for category in CATEGORIES}
+        self.rerolls_left = rerolls_left
 
     def roll_dice(self, keep):
         if self.rerolls_left > 0:
@@ -214,28 +214,63 @@ class ExpectimaxYahtzee:
             return ('score', best_category)
 
 
-def play_game_with_expectimax():
+def show_best_move(dice, score_sheet, rerolls_left):
     game = YahtzeeGame()
+    game.dice = dice
+    game.score_sheet = score_sheet
+    game.rerolls_left = rerolls_left
+
     ai = ExpectimaxYahtzee(max_depth=2, num_samples=50)
+    action, param = ai.get_best_action(game)
 
-    while not game.is_game_over():
-        print(f"Current dice: {game.dice}")
-        print(f"Rerolls left: {game.rerolls_left}")
+    # Interpret the action
+    if action == 'reroll':
+        print(f"Recommended move: Reroll dice with the pattern {param}")
+        print(f"Current dice: {dice}, Rerolls left: {rerolls_left}")
+        return action, param
+    elif action == 'score':
+        print(f"Recommended move: Score in category '{param}'")
+        print(f"Dice: {dice}, Category: {param}, Potential score: {CATEGORY_SCORES[param](dice)}")
+        return action, param
+    else:
+        print("No valid move available")
+        return None
 
-        action, param = ai.get_best_action(game)
 
-        if action == 'reroll':
-            game.roll_dice(param)
-        else:
-            score = game.score_roll(param)
-            print(f"Scored {score} in {param}")
+def show_best_move(dice, score_sheet, rerolls_left):
+    game = YahtzeeGame()
+    game.dice = dice
+    game.score_sheet = score_sheet
+    game.rerolls_left = rerolls_left
 
-        print("Current scores:", game.score_sheet)
-        print()
+    ai = ExpectimaxYahtzee(max_depth=2, num_samples=50)
+    action, param = ai.get_best_action(game)
+
+    # Interpret the action and return in the format expected by with_rl_ai
+    if action == 'reroll':
+        return ("Reroll", param)
+    elif action == 'score':
+        # Convert category name to match the format expected by the game
+        category_mapping = {
+            "Aces": "ones",
+            "Twos": "twos",
+            "Threes": "threes",
+            "Fours": "fours",
+            "Fives": "fives",
+            "Sixes": "sixes",
+            "Three of a Kind": "three_of_a_kind",
+            "Four of a Kind": "four_of_a_kind",
+            "Full House": "full_house",
+            "Small Straight": "small_straight",
+            "Large Straight": "large_straight",
+            "Yahtzee": "yahtzee",
+            "Chance": "chance"
+        }
+        return category_mapping[param]
+    else:
+        return None
 
     final_score = sum(score for score in game.score_sheet.values() if score is not None)
     print(f"Game Over! Final score: {final_score}")
     return final_score
 
-
-play_game_with_expectimax()
