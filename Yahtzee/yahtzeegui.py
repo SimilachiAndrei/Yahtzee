@@ -1,6 +1,9 @@
 import tkinter as tk
+
+import dqn
 import yahtzeegame as yz
 from chatbot import chatbot_response
+from utils import convert_to_score_sheet
 
 
 class YahtzeeGUI:
@@ -121,7 +124,15 @@ class YahtzeeGUI:
     def submit_text(self):
         """Handle text submission from the user."""
         user_input = self.text_entry.get()
-        response = chatbot_response(user_input)
+        if user_input == "help":
+            action_data = dqn.show_best_move(
+                self.game.state.play.table_dices,
+                convert_to_score_sheet(self.game.state.categories),
+                self.game.state.throw_turn
+            )
+            response = action_data
+        else:
+            response = chatbot_response(user_input)
         self.response_label.config(text=response)
 
     def create_category_score_table(self):
