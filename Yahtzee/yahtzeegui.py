@@ -130,7 +130,12 @@ class YahtzeeGUI:
                 convert_to_score_sheet(self.game.state.categories),
                 self.game.state.throw_turn
             )
-            response = action_data
+            if isinstance(action_data, tuple) and action_data[0] == "Reroll":
+                response = "Reroll the following dice: "
+                for idx, die in enumerate(action_data[1]):
+                    if not die:
+                        response += f" {idx + 1}"
+            else: response = action_data
         else:
             response = chatbot_response(user_input)
         self.response_label.config(text=response)
