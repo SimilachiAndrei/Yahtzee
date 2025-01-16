@@ -1,3 +1,4 @@
+import pickle
 import random
 import matplotlib.pyplot as plt
 
@@ -90,6 +91,17 @@ class QLearningAgent:
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
 
+    def save(self, filename):
+        with open(filename, 'wb') as f:
+            pickle.dump(self.__dict__, f)
+
+    @classmethod
+    def load(cls, filename):
+        agent = cls()
+        with open(filename, 'rb') as f:
+            agent.__dict__ = pickle.load(f)
+        return agent
+
     def get_q_value(self, state, action):
         return self.q_table.get((state, action), 0)
 
@@ -151,24 +163,22 @@ def train_agent(episodes=1000):
 
         rewards_per_episode.append(total_reward)
         agent.decay_epsilon()
-
+    agent.save("rl_models/rl_model.pkl")
     return agent, rewards_per_episode
 
 
 def show_best_move(dice, score_sheet, rerolls_left):
-    # Train the agent first
-    print("Training the agent...")
-    trained_agent, _ = train_agent(episodes=10)
+    trained_agent = QLearningAgent.load("rl_models/rl_model.pkl")
+    print("Loaded existing agent...")
 
     game = YahtzeeGame(dice=dice, score_sheet=score_sheet, rerolls_left=rerolls_left)
     state = game.get_state()
     action_data = trained_agent.choose_action(state, game)
 
-
-
     if isinstance(action_data, tuple) and action_data[0] == "Reroll":
         _, reroll_pattern = action_data
-        print(f"Recommended move: Reroll dice {reroll_pattern} (Current dice: {game.dice}, Rerolls left: {game.rerolls_left})")
+        print(
+            f"Recommended move: Reroll dice {reroll_pattern} (Current dice: {game.dice}, Rerolls left: {game.rerolls_left})")
         return action_data
     elif action_data is not None:
         print(f"Recommended move: Score in category '{action_data}'")
@@ -178,15 +188,5 @@ def show_best_move(dice, score_sheet, rerolls_left):
         return action_data
 
 
-
-# Example usage
 if __name__ == "__main__":
-    dice = [1, 3, 3, 5, 6]
-    score_sheet = {
-        "Aces": None, "Twos": None, "Threes": None, "Fours": None, "Fives": None, "Sixes": None,
-        "Three of a Kind": None, "Four of a Kind": None, "Full House": None, "Small Straight": None,
-        "Large Straight": None, "Yahtzee": None, "Chance": None
-    }
-    rerolls_left = 2
-
-    show_best_move(dice, score_sheet, rerolls_left)
+    train_agent(10000)
