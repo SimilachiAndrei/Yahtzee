@@ -37,8 +37,6 @@ class YahtzeeGame:
     def ai_turn(self):
         self.state.first_roll()
 
-        chosen_ai = rand.randint(0,2)
-
         while self.state.throw_turn < 3:
             if self.ai_type == 0:
                 print("using RL")
