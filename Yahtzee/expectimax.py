@@ -213,30 +213,6 @@ class ExpectimaxYahtzee:
         else:
             return ('score', best_category)
 
-
-def show_best_move(dice, score_sheet, rerolls_left):
-    game = YahtzeeGame()
-    game.dice = dice
-    game.score_sheet = score_sheet
-    game.rerolls_left = rerolls_left
-
-    ai = ExpectimaxYahtzee(max_depth=2, num_samples=50)
-    action, param = ai.get_best_action(game)
-
-    # Interpret the action
-    if action == 'reroll':
-        print(f"Recommended move: Reroll dice with the pattern {param}")
-        print(f"Current dice: {dice}, Rerolls left: {rerolls_left}")
-        return action, param
-    elif action == 'score':
-        print(f"Recommended move: Score in category '{param}'")
-        print(f"Dice: {dice}, Category: {param}, Potential score: {CATEGORY_SCORES[param](dice)}")
-        return action, param
-    else:
-        print("No valid move available")
-        return None
-
-
 def show_best_move(dice, score_sheet, rerolls_left):
     game = YahtzeeGame()
     game.dice = dice
