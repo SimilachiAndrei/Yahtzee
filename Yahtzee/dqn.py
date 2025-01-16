@@ -102,7 +102,7 @@ class QNetwork(nn.Module):
 
 class DQNAgent:
     def __init__(self, state_size, action_size, hidden_size=128, alpha=0.001, gamma=0.9, epsilon=1.0,
-                 epsilon_min=0.01, epsilon_decay_steps=10000000):
+                 epsilon_min=0.01, epsilon_decay_steps=1000):
         self.state_size = state_size
         self.action_size = action_size
         self.gamma = gamma
@@ -222,7 +222,7 @@ def train_agent(episodes=1000):
         if (episode + 1) % 100 == 0:
             print(f"Episode {episode + 1}/{episodes}, Total Reward: {total_reward}")
 
-    agent.save_model("rl_models/dqn_model" + str(episodes) + ".pth")
+    agent.save_model("dqn_models/dqn_model" + ".pth")
     return agent
 
 
@@ -268,9 +268,17 @@ def test_agent(agent, num_games=100, verbose=False):
     print(f"Min score: {min(scores)}")
 
 def show_best_move(dice, score_sheet, rerolls_left):
-    # Train the agent first
     print("Training the agent...")
-    trained_agent = train_agent(episodes=10)
+    state_size = NUM_DICE + len(CATEGORIES) + 1
+    action_size = len(CATEGORIES) + 1
+    trained_agent = DQNAgent(state_size, action_size)
+
+    try:
+        trained_agent.load_model("dqn_models/dqn_model.pth")
+        print("Model loaded successfully!")
+    except FileNotFoundError:
+        print("No pre-trained model found. Please train the agent first.")
+        exit()
 
     game = YahtzeeGame(dice=dice, score_sheet=score_sheet, rerolls_left=rerolls_left)
     state = game.get_state()
@@ -293,15 +301,12 @@ if __name__ == "__main__":
     # trained_agent = DQNAgent(state_size, action_size)
     #
     # try:
-    #     trained_agent.load_model("rl_models/dqn_model.pth")
+    #     trained_agent.load_model("dqn_models/dqn_model.pth")
     #     print("Model loaded successfully!")
     # except FileNotFoundError:
     #     print("No pre-trained model found. Please train the agent first.")
     #     exit()
 
-    trained_agent = train_agent(10000)
+    trained_agent = train_agent(1000)
 
     test_agent(trained_agent, num_games=100, verbose=False)
-
-    print("\nPlaying a single game with detailed output:")
-    test_agent(trained_agent, num_games=1, verbose=True)
