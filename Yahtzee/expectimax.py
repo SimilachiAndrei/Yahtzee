@@ -226,17 +226,17 @@ def show_best_move(dice, score_sheet, rerolls_left):
         return ("Reroll", param)
     elif action == 'score':
         category_mapping = {
-            "Aces": "ones",
+            "Aces": "aces",
             "Twos": "twos",
             "Threes": "threes",
             "Fours": "fours",
             "Fives": "fives",
             "Sixes": "sixes",
-            "Three of a Kind": "three_of_a_kind",
-            "Four of a Kind": "four_of_a_kind",
-            "Full House": "full_house",
-            "Small Straight": "small_straight",
-            "Large Straight": "large_straight",
+            "Three of a Kind": "three of a kind",
+            "Four of a Kind": "four of a kind",
+            "Full House": "full house",
+            "Small Straight": "small straight",
+            "Large Straight": "large straight",
             "Yahtzee": "yahtzee",
             "Chance": "chance"
         }
