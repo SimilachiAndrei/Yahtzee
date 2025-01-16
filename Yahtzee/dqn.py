@@ -296,16 +296,6 @@ def show_best_move(dice, score_sheet, rerolls_left):
         return action_data
 
 if __name__ == "__main__":
-    # state_size = NUM_DICE + len(CATEGORIES) + 1
-    # action_size = len(CATEGORIES) + 1
-    # trained_agent = DQNAgent(state_size, action_size)
-    #
-    # try:
-    #     trained_agent.load_model("dqn_models/dqn_model.pth")
-    #     print("Model loaded successfully!")
-    # except FileNotFoundError:
-    #     print("No pre-trained model found. Please train the agent first.")
-    #     exit()
 
     trained_agent = train_agent(1000)
 

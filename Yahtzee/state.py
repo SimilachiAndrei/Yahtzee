@@ -22,7 +22,6 @@ class State:
                                 self.categories[category][self.get_player()] is not None]
         return rand.choice(available_categories) if available_categories else None
 
-    # Validations
     def is_final_state(self):
         return self.round >= 13
 
@@ -33,7 +32,6 @@ class State:
         if category not in self.categories: return False
         return self.categories[category][self.get_player()] is None
 
-    # Transitions
     def next_player(self):
         if self.player == 1:
             self.round += 1

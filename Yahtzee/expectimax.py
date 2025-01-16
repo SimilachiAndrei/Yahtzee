@@ -222,11 +222,9 @@ def show_best_move(dice, score_sheet, rerolls_left):
     ai = ExpectimaxYahtzee(max_depth=2, num_samples=50)
     action, param = ai.get_best_action(game)
 
-    # Interpret the action and return in the format expected by with_rl_ai
     if action == 'reroll':
         return ("Reroll", param)
     elif action == 'score':
-        # Convert category name to match the format expected by the game
         category_mapping = {
             "Aces": "ones",
             "Twos": "twos",

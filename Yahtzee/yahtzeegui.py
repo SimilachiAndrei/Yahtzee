@@ -11,18 +11,15 @@ class YahtzeeGUI:
         self.master.title("Yahtzee Game")
         self.game = yz.YahtzeeGame()
 
-        # Initialize the menu screen
         self.init_menu_screen()
 
     def init_menu_screen(self):
-        """Set up the initial menu screen with buttons RL, DQN, and ExpectiMax."""
         self.menu_frame = tk.Frame(self.master)
         self.menu_frame.pack(expand=True, fill=tk.BOTH)
 
         self.menu_label = tk.Label(self.menu_frame, text="Choose an option to start:", font=('Arial', 16))
         self.menu_label.pack(pady=20)
 
-        # Button names and their actions
         menu_options = [("RL", 1), ("DQN", 2), ("ExpectiMax", 3)]
 
         self.menu_buttons = []
@@ -33,14 +30,12 @@ class YahtzeeGUI:
             self.menu_buttons.append(button)
 
     def handle_menu_choice(self, number):
-        """Handle the menu choice and transition to the main game."""
         print(f"Option chosen: {['RL', 'DQN', 'ExpectiMax'][number - 1]}")
         self.game.ai_type = number - 1
         self.menu_frame.destroy()  # Remove the menu frame
         self.init_game_screen()  # Initialize the full game screen
 
     def init_game_screen(self):
-        """Set up the full game interface."""
         with open("feedback.txt", "w") as file:
             file.write("")
 
@@ -123,7 +118,6 @@ class YahtzeeGUI:
         self.start_round()
 
     def submit_text(self):
-        """Handle text submission from the user."""
         user_input = self.text_entry.get()
         if user_input == "help":
             action_data = dqn.show_best_move(
@@ -142,7 +136,6 @@ class YahtzeeGUI:
         self.response_label.config(text=response)
 
     def create_category_score_table(self):
-        """Create the category score table with 3 columns: Category, Player Score, AI Score."""
         categories = self.game.state.categories.keys()
         tk.Label(self.category_table_frame, text="Category", font=("Arial", 12), width=20, anchor="w").grid(row=0, column=0)
         tk.Label(self.category_table_frame, text="Player Score", font=("Arial", 12), width=15, anchor="w").grid(row=0, column=1)
@@ -159,7 +152,6 @@ class YahtzeeGUI:
             row += 1
 
     def update_category_score_table(self):
-        """Update the category score table for both the player and AI."""
         categories = self.game.state.categories
         for i, (category_name, (player_score, ai_score)) in enumerate(categories.items()):
             player_score_label, ai_score_label = self.category_table[i][1], self.category_table[i][2]
@@ -181,7 +173,6 @@ class YahtzeeGUI:
                 col = 0
 
     def start_round(self):
-        """Start a new round."""
         status = self.game.start_round()
         if status == "Game Over":
             self.end_game()
@@ -192,32 +183,30 @@ class YahtzeeGUI:
 
     def player_turn(self):
         print("player turn")
-        """Handle the player's turn (first roll is automatic)."""
         self.game.player_first_roll()
         self.update_dice_display()
 
-        # Enable player controls
         self.roll_button.config(state=tk.NORMAL)
         for button in self.category_buttons:
             button.config(state=tk.NORMAL)
 
     def roll_dice(self):
-        self.feedback("Reroll")  # Send feedback to the feedback method
+        self.feedback("Reroll")
         if self.game.player_roll_dice():
             self.update_dice_display()
         else:
-            self.feedback("No rolls left.")  # Send feedback to the feedback method
+            self.feedback("No rolls left.")
 
     def choose_category(self, category):
-        self.feedback(category)  # Send feedback to the feedback method
+        self.feedback(category)
         if self.game.choose_category(category):
             self.update_score_display()
-            self.update_category_score_table()  # Update category score table
+            self.update_category_score_table()
             self.disable_player_controls()
             self.start_round()
         else:
             self.feedback(
-                f"Category '{category}' has already been selected or is invalid.")  # Send feedback to the feedback method
+                f"Category '{category}' has already been selected or is invalid.")
 
     def feedback(self, message):
         action_data = dqn.show_best_move(
@@ -236,7 +225,6 @@ class YahtzeeGUI:
                     file.write(f"For this dices {dices} you choose {message} but we advise you to select {action_data}\n")
 
     def ai_turn(self):
-        """Automate AI moves."""
         self.status_label.config(text="AI Status: Playing...")
         self.game.ai_turn()
         self.update_dice_display()
@@ -246,17 +234,14 @@ class YahtzeeGUI:
         self.start_round()
 
     def move_dice_hand_to_table(self, index):
-        """Move dice from hand to table when hand dice is clicked."""
         self.game.move_dice_hand_to_table(index)
         self.update_dice_display()
 
     def move_dice_table_to_hand(self, index):
-        """Move dice from table to hand when table dice is clicked."""
         self.game.move_dice_table_to_hand(index)
         self.update_dice_display()
 
     def update_dice_display(self):
-        """Update the hand and table dice display."""
         hand_dices = self.game.get_hand_dices()
         table_dices = self.game.get_table_dices()
 
@@ -265,33 +250,26 @@ class YahtzeeGUI:
             self.table_labels[i].config(text=str(table_dices[i]) if i < len(table_dices) else '0')
 
     def update_score_display(self):
-        """Update the score display for player and AI."""
         player_score, ai_score = self.game.get_scores()
         self.player_score_label.config(text=f'Player Score: {player_score}')
         self.ai_score_label.config(text=f'AI Score: {ai_score}')
 
     def disable_player_controls(self):
-        """Disable the buttons during the AI's turn or after the player selects a category."""
         self.roll_button.config(state=tk.DISABLED)
         for button in self.category_buttons:
             button.config(state=tk.DISABLED)
 
     def end_game(self):
-        """End the game and display the final scores with options to play again or exit."""
-        # Clear any previous widgets in the left and right frames
         for widget in self.left_frame.winfo_children():
             widget.destroy()
         for widget in self.right_frame.winfo_children():
             widget.destroy()
-
-        # Set up the end game frame in the left part of the screen
         end_game_frame = tk.Frame(self.left_frame)
         end_game_frame.pack(expand=True)
 
         player_score, ai_score = self.game.get_scores()
         winner = "Player" if player_score > ai_score else "AI"
 
-        # Display Game Over and scores
         tk.Label(
             end_game_frame,
             text="Game Over!",
@@ -304,7 +282,6 @@ class YahtzeeGUI:
             font=('Arial', 18)
         ).pack(pady=20)
 
-        # Add buttons to play again or exit
         button_frame = tk.Frame(end_game_frame)
         button_frame.pack(pady=20)
 
@@ -324,33 +301,27 @@ class YahtzeeGUI:
             width=15
         ).pack(side=tk.LEFT, padx=10)
 
-        # Set up the right frame for displaying the feedback
         feedback_frame = tk.Frame(self.right_frame, padx=20, pady=10)
         feedback_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Try to read feedback from the feedback.txt file
         try:
             with open("feedback.txt", "r") as file:
                 feedback_content = file.read()
 
-            # Create a Text widget with a scrollbar for the feedback content
             feedback_text = tk.Text(feedback_frame, font=('Arial', 12), wrap=tk.WORD, width=40, height=15)
             feedback_text.insert(tk.END, feedback_content)
-            feedback_text.config(state=tk.DISABLED)  # Make it read-only
+            feedback_text.config(state=tk.DISABLED)
 
-            # Add a scrollbar to the Text widget
             scrollbar = tk.Scrollbar(feedback_frame, command=feedback_text.yview)
             feedback_text.config(yscrollcommand=scrollbar.set)
             scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
             feedback_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         except FileNotFoundError:
-            # If feedback.txt doesn't exist, show a default message
             feedback_text = tk.Label(feedback_frame, text="No feedback available.", font=('Arial', 12))
             feedback_text.pack(pady=20)
 
     def restart_game(self):
-        """Reset the game and return to the initial menu screen."""
         for widget in self.master.winfo_children():
             widget.destroy()
 
