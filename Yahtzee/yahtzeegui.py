@@ -2,14 +2,45 @@ import tkinter as tk
 import yahtzeegame as yz
 from chatbot import chatbot_response
 
+
 class YahtzeeGUI:
     def __init__(self, master):
-        self.game = yz.YahtzeeGame()
         self.master = master
-        master.title("Yahtzee Game")
+        self.master.title("Yahtzee Game")
+        self.game = yz.YahtzeeGame()
 
+        # Initialize the menu screen
+        self.init_menu_screen()
+
+    def init_menu_screen(self):
+        """Set up the initial menu screen with buttons RL, DQN, and ExpectiMax."""
+        self.menu_frame = tk.Frame(self.master)
+        self.menu_frame.pack(expand=True, fill=tk.BOTH)
+
+        self.menu_label = tk.Label(self.menu_frame, text="Choose an option to start:", font=('Arial', 16))
+        self.menu_label.pack(pady=20)
+
+        # Button names and their actions
+        menu_options = [("RL", 1), ("DQN", 2), ("ExpectiMax", 3)]
+
+        self.menu_buttons = []
+        for name, value in menu_options:
+            button = tk.Button(self.menu_frame, text=name, font=('Arial', 14),
+                               command=lambda num=value: self.handle_menu_choice(num))
+            button.pack(pady=10)
+            self.menu_buttons.append(button)
+
+    def handle_menu_choice(self, number):
+        """Handle the menu choice and transition to the main game."""
+        print(f"Option chosen: {['RL', 'DQN', 'ExpectiMax'][number - 1]}")
+        self.game.ai_type = number - 1
+        self.menu_frame.destroy()  # Remove the menu frame
+        self.init_game_screen()  # Initialize the full game screen
+
+    def init_game_screen(self):
+        """Set up the full game interface."""
         # Main horizontal split frame
-        self.main_pane = tk.PanedWindow(master, orient=tk.HORIZONTAL)
+        self.main_pane = tk.PanedWindow(self.master, orient=tk.HORIZONTAL)
         self.main_pane.pack(fill=tk.BOTH, expand=True)
 
         # Left frame for game content

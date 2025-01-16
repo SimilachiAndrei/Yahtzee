@@ -10,6 +10,7 @@ from utils import convert_to_score_sheet
 class YahtzeeGame:
     def __init__(self):
         self.state = st.State()
+        self.ai_type = 0
 
     def start_round(self):
         """Start a new round based on the current player."""
@@ -34,32 +35,28 @@ class YahtzeeGame:
         return False
 
     def ai_turn(self):
-        self.with_rl_ai()
-
-
-    def with_rl_ai(self):
         self.state.first_roll()
 
         chosen_ai = rand.randint(0,2)
 
         while self.state.throw_turn < 3:
-            if chosen_ai == 0:
-                print("using expectimax")
-                action_data = expectimax.show_best_move(
-                    self.state.play.table_dices,
-                    convert_to_score_sheet(self.state.categories),
-                    self.state.throw_turn
-                )
-            elif chosen_ai == 1:
+            if self.ai_type == 0:
                 print("using RL")
                 action_data = RL_AI.show_best_move(
                     self.state.play.table_dices,
                     convert_to_score_sheet(self.state.categories),
                     self.state.throw_turn
                 )
-            else:
-                print("using dqn")
+            elif self.ai_type == 1:
+                print("using DQN")
                 action_data = dqn.show_best_move(
+                    self.state.play.table_dices,
+                    convert_to_score_sheet(self.state.categories),
+                    self.state.throw_turn
+                )
+            else:
+                print("using ExpectiMax")
+                action_data = expectimax.show_best_move(
                     self.state.play.table_dices,
                     convert_to_score_sheet(self.state.categories),
                     self.state.throw_turn
