@@ -259,7 +259,54 @@ class YahtzeeGUI:
             button.config(state=tk.DISABLED)
 
     def end_game(self):
-        """End the game and display the final scores."""
+        """End the game and display the final scores with options to play again or exit."""
+        for widget in self.left_frame.winfo_children():
+            widget.destroy()
+        for widget in self.right_frame.winfo_children():
+            widget.destroy()
+
+        end_game_frame = tk.Frame(self.left_frame)
+        end_game_frame.pack(expand=True)
+
         player_score, ai_score = self.game.get_scores()
         winner = "Player" if player_score > ai_score else "AI"
-        print(f"Game Over! Final Scores - Player: {player_score}, AI: {ai_score}. Winner: {winner}")
+
+        tk.Label(
+            end_game_frame,
+            text="Game Over!",
+            font=('Arial', 24, 'bold')
+        ).pack(pady=20)
+
+        tk.Label(
+            end_game_frame,
+            text=f"Final Scores:\nPlayer: {player_score}\nAI: {ai_score}\nWinner: {winner}",
+            font=('Arial', 18)
+        ).pack(pady=20)
+
+        button_frame = tk.Frame(end_game_frame)
+        button_frame.pack(pady=20)
+
+        tk.Button(
+            button_frame,
+            text="Play Again",
+            command=self.restart_game,
+            font=('Arial', 14),
+            width=15
+        ).pack(side=tk.LEFT, padx=10)
+
+        tk.Button(
+            button_frame,
+            text="Exit",
+            command=self.master.quit,
+            font=('Arial', 14),
+            width=15
+        ).pack(side=tk.LEFT, padx=10)
+
+    def restart_game(self):
+        """Reset the game and return to the initial menu screen."""
+        for widget in self.master.winfo_children():
+            widget.destroy()
+
+        self.game = yz.YahtzeeGame()
+
+        self.init_menu_screen()
