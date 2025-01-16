@@ -243,8 +243,3 @@ def show_best_move(dice, score_sheet, rerolls_left):
         return category_mapping[param]
     else:
         return None
-
-    final_score = sum(score for score in game.score_sheet.values() if score is not None)
-    print(f"Game Over! Final score: {final_score}")
-    return final_score
-
