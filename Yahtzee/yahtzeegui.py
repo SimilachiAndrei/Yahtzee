@@ -1,7 +1,7 @@
 import tkinter as tk
 import yahtzeegame as yz
 import chatbot
-from Yahtzee.chatbot import chatbot_response
+from chatbot import chatbot_response
 
 
 class YahtzeeGUI:
